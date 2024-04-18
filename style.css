@@ -1,5 +1,6 @@
 * {
   box-sizing: border-box;
+  margin: 0;
 }
 body {
   display: grid;
@@ -7,6 +8,7 @@ body {
   min-height: 100vh;
   margin: 0;
   background-color: #7a45ff;
+  font-family: poppins;
 }
 button {
   border: none;
@@ -23,18 +25,25 @@ button {
   padding: 0.5rem;
   border-radius: 20px;
   position: relative;
+  border: 2px solid;
+  border-bottom: 5px solid black;
 }
 .indicator {
+  --width: 35px;
   position: absolute;
-  top: -15px;
-  border: 1px solid;
-  width: 20px;
-  height: 20px;
-  background-color: #fd6787;
-  clip-path: polygon(0% 0%, 100% 0%, 50% 100%, 0% 0%);
-  left: calc(var(--hover-x) * (50px + 1rem) + 25px - 5px);
-  border: 2px solid;
+  top: calc(var(--width) * -1.2);
+  left: calc(var(--hover-x) * (50px + 1rem) + var(--width));
+  transform: translate(-50%);
   transition: left 200ms;
+}
+.indicator svg path {
+  transition: fill 200ms;
+}
+[data-turn="p-1"] .indicator svg path {
+  fill: #fd6787;
+}
+[data-turn="p-2"] .indicator svg path {
+  fill: #fecf6b;
 }
 
 .col {
@@ -60,17 +69,74 @@ button {
   aspect-ratio: 1;
   translate: 0 calc(var(--y) * (-50px - 1rem));
   animation: drop 200ms forwards ease-in;
+}
+.p-1 {
+  background: #fd6787;
+}
+.p-2 {
+  background: #fecf6b;
+}
 
-  &.x {
-    background: #fecf6b;
-  }
-  &.o {
-    background: #fd6787;
-  }
+.timer {
+  width: 197px;
+  height: 165px;
+  position: absolute;
+  bottom: -160px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  color: white;
+  background-image: url(assets/timer-red.svg);
+}
+[data-turn="p-2"] .timer {
+  background-image: url(assets/timer-yellow.svg);
+  color: black;
+}
+.timer h2 {
+  font-size: 1rem;
+  font-weight: 400;
+}
+.timer p {
+  font-size: 2.5rem;
+  font-weight: 500;
 }
 
 @keyframes drop {
   to {
     translate: 0 0;
   }
+}
+
+.game-over {
+  border: 1px solid;
+  border-radius: 8px;
+}
+.game-over .winner {
+  height: 50px;
+  width: 50px;
+  border-radius: 50%;
+  border: 1px solid black;
+  margin: auto;
+}
+.game-over .message {
+  font-size: 2rem;
+}
+.game-over .buttons {
+  display: flex;
+  gap: 0.5em;
+}
+.buttons button {
+  flex: 1;
+  padding: 0.5em 0;
+  border-radius: 6px;
+  border: 1px solid black;
+  border-bottom: 3px solid black;
+}
+.buttons .primary {
+  flex: 2;
+  background-color: #7a45ff;
+  color: #fff;
 }
