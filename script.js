@@ -12,6 +12,15 @@ const ROWS = 6;
 const PLAYER1 = 1;
 const PLAYER2 = 2;
 let turn = PLAYER1;
+let lastToPlayer = PLAYER1;
+let winner;
+
+const score = {
+  [PLAYER1]: 0,
+  [PLAYER2]: 0,
+  tie: 0,
+};
+// ai
 let isAI = true;
 const scoreMap = {
   [PLAYER1]: -100,
@@ -27,8 +36,10 @@ let winningSpots = [];
 const gameContainer = document.querySelector(".board");
 const cols = document.querySelectorAll(".col");
 const cells = document.querySelectorAll(".cell");
-const gameOverDialog = document.querySelector(".game-over");
 const timer = document.querySelector(".timer span");
+const p1Score = document.querySelector(".p-1-score");
+const p2Score = document.querySelector(".p-2-score");
+const pauseDialog = document.querySelector(".pause-modal");
 
 // ====== Variables END =======
 
@@ -49,54 +60,97 @@ cols.forEach((col, j) => {
     if (isAI && turn !== PLAYER1) return;
 
     for (let i = board.length - 1; i >= 0; i--) {
-      if (board[i][j] === 0) return play(i, j);
+      if (board[i][j] === 0) return move(i, j);
     }
   });
 });
 
-// timer
-intervalId = setInterval(() => {
-  time--;
-  if (time == 0) {
-    switchTurn();
-    time = 30;
-  }
+function restart() {
+  if (intervalId) clearInterval(intervalId);
 
+  document.querySelector(".bg").classList.remove(`p-${winner}`);
+  document.querySelector(".game-over").style.display = "none";
+  document.querySelector(".timer").style.display = "flex";
+
+  time = 30;
+  lastToPlayer = lastToPlayer === PLAYER1 ? PLAYER2 : PLAYER1;
+  switchTurn(lastToPlayer);
+
+  play();
   timer.textContent = time;
-}, 1000);
 
-function play(i, j) {
+  renderScore();
+
+  board.map((row) => row.fill(0));
+
+  while ((disc = document.querySelector(".disc"))) {
+    disc.remove();
+  }
+}
+restart();
+
+function pause() {
+  clearInterval(intervalId);
+
+  pauseDialog.showModal();
+}
+function play() {
+  intervalId = setInterval(() => {
+    time--;
+    if (time == 0) {
+      switchTurn();
+      time = 30;
+    }
+
+    timer.textContent = time;
+  }, 1000);
+
+  pauseDialog.close();
+}
+
+function move(i, j) {
   board[i][j] = turn;
   cells[i + j * 6].innerHTML = `<div class="disc p-${turn}"></div>`;
 
-  const winner = checkWin(i, j);
+  winner = checkWin(i, j);
   if (!winner) switchTurn();
-  else gameOver(winner);
+  else gameOver();
 }
 
-function switchTurn() {
-  turn = turn === PLAYER1 ? PLAYER2 : PLAYER1;
+function switchTurn(newTurn) {
+  turn = newTurn || (turn === PLAYER1 ? PLAYER2 : PLAYER1);
   document.body.dataset.turn = `p-${turn}`;
   time = 30;
   timer.textContent = time;
+
   if (isAI && turn === PLAYER2)
-    setTimeout(() => play(...perfectSpot(board)), 500);
+    setTimeout(() => move(...perfectSpot(board)), 500);
 }
 
-function gameOver(winner) {
-  clearInterval(intervalId);
-  let message = "";
+function renderScore() {
+  p1Score.textContent = score[PLAYER1];
+  p2Score.textContent = score[PLAYER2];
+}
 
-  if (winner === PLAYER1) message = "Player 1 takes the Round";
-  if (winner === PLAYER2) message = "Player 2 Takes the Round";
+function gameOver() {
+  clearInterval(intervalId);
+  let message = "win";
+  score[winner]++;
+  renderScore();
+
   if (winner === "tie") message = "draw";
 
   if (winner !== "tie")
-    gameOverDialog.querySelector(".winner").classList.add(`p-${winner}`);
-  gameOverDialog.querySelector(".message").textContent = message;
+    document.querySelector(".player").textContent =
+      winner === PLAYER1 ? "PLAYER 1" : "PLAYER 2";
+
+  document.querySelector(".bg").classList.add(`p-${winner}`);
+  document.querySelector(".message").textContent = message;
 
   highlightWinningDiscs();
-  gameOverDialog.showModal();
+
+  document.querySelector(".timer").style.display = "none";
+  document.querySelector(".game-over").style.display = "flex";
 }
 
 function highlightWinningDiscs() {
