@@ -12,6 +12,12 @@ const ROWS = 6;
 const PLAYER1 = 1;
 const PLAYER2 = 2;
 let turn = PLAYER1;
+let isAI = true;
+const scoreMap = {
+  [PLAYER1]: -100,
+  [PLAYER2]: 100,
+  tie: 0,
+};
 // timer vars
 let intervalId = null;
 let time = 30;
@@ -40,6 +46,8 @@ cols.forEach((col, j) => {
   });
 
   col.addEventListener("click", () => {
+    if (isAI && turn !== PLAYER1) return;
+
     for (let i = board.length - 1; i >= 0; i--) {
       if (board[i][j] === 0) return play(i, j);
     }
@@ -71,6 +79,8 @@ function switchTurn() {
   document.body.dataset.turn = `p-${turn}`;
   time = 30;
   timer.textContent = time;
+  if (isAI && turn === PLAYER2)
+    setTimeout(() => play(...perfectSpot(board)), 500);
 }
 
 function gameOver(winner) {
