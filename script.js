@@ -27,6 +27,7 @@ const timer = document.querySelector(".timer span");
 // ====== Variables END =======
 
 cells.forEach((cell, i) => {
+  cell.dataset.index = (i % ROWS) * ROWS + Math.floor(i / ROWS);
   cell.style.setProperty("--y", i % ROWS);
 });
 
@@ -84,7 +85,17 @@ function gameOver(winner) {
     gameOverDialog.querySelector(".winner").classList.add(`p-${winner}`);
   gameOverDialog.querySelector(".message").textContent = message;
 
+  highlightWinningDiscs();
   gameOverDialog.showModal();
+}
+
+function highlightWinningDiscs() {
+  if (winningSpots.length === 0) return;
+
+  winningSpots.forEach(({ x, y }) => {
+    const disc = document.querySelector(`[data-index="${x * ROWS + y}"] .disc`);
+    disc.classList.add("win");
+  });
 }
 
 function checkWin(x, y) {
@@ -160,9 +171,9 @@ function checkWin(x, y) {
       ) {
         winningSpots = [
           { x: row, y: col },
-          { x: row + 1, y: col - 1 },
-          { x: row + 2, y: col - 2 },
-          { x: row + 3, y: col - 3 },
+          { x: row + 1, y: col + 1 },
+          { x: row + 2, y: col + 2 },
+          { x: row + 3, y: col + 3 },
         ];
         return player;
       }
