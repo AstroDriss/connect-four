@@ -75,6 +75,7 @@ function evaluateBoard(board, myPiece, last) {
     score += countThreats(row, 3, myPiece) * 10;
     score += countThreats(row, 2, myPiece) * 1;
   }
+  score += countThreats(transposedBoard[3], 1, myPiece) * 1;
 
   // Analyze diagonal threats (check both directions)
   for (let row = 0; row < board.length - 3; row++) {
