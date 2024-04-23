@@ -12,7 +12,7 @@ const ROWS = 6;
 const PLAYER1 = 1;
 const PLAYER2 = 2;
 let turn = PLAYER1;
-let lastToPlayer = PLAYER1;
+let lastToPlay = null;
 let winner;
 
 const score = {
@@ -73,8 +73,9 @@ function restart() {
   document.querySelector(".timer").style.display = "flex";
 
   time = 30;
-  lastToPlayer = lastToPlayer === PLAYER1 ? PLAYER2 : PLAYER1;
-  switchTurn(lastToPlayer);
+  lastToPlay = lastToPlay === PLAYER1 ? PLAYER2 : PLAYER1;
+  switchTurn(lastToPlay || turn);
+  winningSpots = [];
 
   play();
   timer.textContent = time;
@@ -87,7 +88,6 @@ function restart() {
     disc.remove();
   }
 }
-restart();
 
 function pause() {
   clearInterval(intervalId);
@@ -106,6 +106,18 @@ function play() {
   }, 1000);
 
   pauseDialog.close();
+}
+function quite() {
+  turn = PLAYER1;
+  lastToPlay = null;
+  score[PLAYER1] = 0;
+  score[PLAYER2] = 0;
+  score["tie"] = 0;
+  winner = null;
+
+  pauseDialog.close();
+  showSection("home");
+  history.pushState("home", "home page", "/");
 }
 
 function move(i, j) {
@@ -135,15 +147,20 @@ function renderScore() {
 function gameOver() {
   clearInterval(intervalId);
   let message = "win";
+  let winnerName = "";
   score[winner]++;
   renderScore();
 
   if (winner === "tie") message = "draw";
+  else if (winner !== "tie" && isAI) {
+    message = winner === PLAYER1 ? "YOU WIN" : "YOU LOOSE";
+    winnerName = "";
+  }
 
-  if (winner !== "tie")
-    document.querySelector(".player").textContent =
-      winner === PLAYER1 ? "PLAYER 1" : "PLAYER 2";
+  if (winner !== "tie" && !isAI)
+    winnerName = winner === PLAYER1 ? "PLAYER 1" : "PLAYER 2";
 
+  document.querySelector(".winner").textContent = winnerName;
   document.querySelector(".bg").classList.add(`p-${winner}`);
   document.querySelector(".message").textContent = message;
 

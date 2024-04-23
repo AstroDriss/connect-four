@@ -6,19 +6,20 @@
     <title>Connect four</title>
     <link rel="stylesheet" href="style.css" />
     <link rel="preload" as="image" href="assets/timer-yellow.svg" />
-    <script src="script.js" defer></script>
-    <script src="minimax.js" defer></script>
+    <script src="js/script.js" defer></script>
+    <script src="js/router.js" defer></script>
+    <script src="js/minimax.js" defer></script>
   </head>
   <body>
     <main>
-      <dialog>
+      <dialog id="rules">
         <h2>RULES</h2>
         <h3>Objective</h3>
         <p>
           Be the first player to connect 4 of the same colored discs in a row
           (either vertically, horizontally, or diagonally).
         </p>
-        <h2>How to Play</h2>
+        <h3>How to Play</h3>
         <ol>
           <li>Red goes first in the first game.</li>
           <li>
@@ -30,7 +31,7 @@
             The starter of the previous game goes second on the next game.
           </li>
         </ol>
-        <button>
+        <button onclick="rules.close()">
           <svg
             width="70px"
             height="75px"
@@ -80,12 +81,21 @@
         </button>
       </dialog>
 
-      <div class="game-container">
+      <section id="home">
+        <div class="home-container">
+          <h1>Connect four</h1>
+          <button class="cpu">play vs cpu</button>
+          <button class="player">play vs player</button>
+          <button onclick="rules.showModal()">game rules</button>
+        </div>
+      </section>
+
+      <section id="game" class="game-container">
         <header>
           <button onclick="pause()" title="pause">
             <svg
-              width="40px"
-              height="40px"
+              width="35px"
+              height="35px"
               viewBox="0 0 24 24"
               fill="none"
               xmlns="http://www.w3.org/2000/svg"
@@ -101,8 +111,8 @@
           </button>
           <button onclick="restart()" title="restart">
             <svg
-              width="40px"
-              height="40px"
+              width="35px"
+              height="35px"
               viewBox="-1 -1 26 26"
               fill="none"
               xmlns="http://www.w3.org/2000/svg"
@@ -251,21 +261,21 @@
           </div>
           <!-- winner -->
           <div class="game-over">
-            <h2 class="player"></h2>
+            <h2 class="winner"></h2>
             <p class="message">WINS</p>
             <button onclick="restart()">Play Again</button>
           </div>
         </footer>
 
         <div class="bg"></div>
-      </div>
+      </section>
 
       <dialog class="pause-modal">
         <div>
           <h2>PAUSE</h2>
           <button onclick="play()">CONTINUE GAME</button>
           <button onclick="restart()">RESTART</button>
-          <button>QUIT GAME</button>
+          <button onclick="quite()">QUIT GAME</button>
         </div>
       </dialog>
     </main>
