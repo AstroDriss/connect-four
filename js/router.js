@@ -18,6 +18,7 @@ function showSection(section) {
 function playVsPlayer() {
   window.location.hash = "#player";
 
+  document.querySelector(".p-2Name").textContent = "PLAYER 2";
   isAI = false;
   restart();
 
@@ -27,6 +28,7 @@ function playVsPlayer() {
 function playVsAI() {
   window.location.hash = "#cpu";
 
+  document.querySelector(".p-2Name").textContent = "CPU";
   isAI = true;
   restart();
 
